@@ -4,12 +4,14 @@ Headlight's fork of mailgun-ruby
 # Why fork?
 
 We wanted some additional features that the main mailgun-ruby gem didn't support. To be blunt, I wasn't even sure if anyone
-else would want some of these features and we don't intend on making these changes bulletproof to the extent that a wider
+else would want some of these features and we don't intend on making these changes foolproof to the extent that a wider
 release would necessitate.
 
 # What changes have we made?
 
-## 1. Change `domain` in the config block to accept a hash (the change that precipitated the fork to begin with).
+## 1. Change `domain` in the config block to accept a hash
+
+This is the change that precipitated the fork to begin with.
 
 We want to start warming up certain domains to get the reputation up. To that extent, we want a slow (but steady) percentage
 of our transactional emails to be sent through the domain that's warming up.
