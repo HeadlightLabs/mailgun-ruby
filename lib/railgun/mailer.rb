@@ -27,6 +27,9 @@ module Railgun
         raise Railgun::ConfigurationError.new("Config requires `#{k}` key", @config) unless @config.has_key?(k)
       end
 
+      domain = @config[:domain]
+      raise Railgun::ConfigurationError.new("Domain is required to be either a string or a hash. Received: #{domain}") unless (domain.is_a? String or domain.is_a? Hash)
+
       @mg_client = Mailgun::Client.new(config[:api_key], config[:api_host] || 'api.mailgun.net', config[:api_version] || 'v3', config[:api_ssl].nil? ? true : config[:api_ssl])
       @domain = @config[:domain]
 
@@ -41,13 +44,20 @@ module Railgun
 
     def deliver!(mail)
       mg_message = Railgun.transform_for_mailgun(mail)
-      response = @mg_client.send_message(@domain, mg_message)
+
+      domain = determine_domain
+      response = @mg_client.send_message(domain, mg_message)
 
       if response.code == 200 then
         mg_id = response.to_h['id']
         mail.message_id = mg_id
       end
       response
+    end
+
+    def determine_domain
+      return @domain if @domain.is_a? String
+      return @domain.max_by {|domain, options| rand ** (1.0 / options[:weight])}.first
     end
 
     def mailgun_client

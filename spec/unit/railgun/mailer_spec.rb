@@ -45,6 +45,35 @@ describe 'Railgun::Mailer' do
     expect(@mailer_obj.mailgun_client).to be_a(Mailgun::Client)
   end
 
+  it 'determines the appropriate domain to send to with a string' do
+    config = {
+      api_key: "foo",
+      domain: "bar"
+    }
+
+
+    @mailer_obj = Railgun::Mailer.new(config)
+    expect(@mailer_obj.determine_domain).to eq('bar')
+  end
+
+  it 'determines the appropriate domain to send to with a hash' do
+
+    config = {
+      api_key: "foo",
+      domain: {
+        "good_domain": { weight: 0.99 },
+        "bad_domain": { weight: 0.01 }
+      }
+    }
+    @mailer_obj = Railgun::Mailer.new(config)
+
+    results = [1..100].map {|_| @mailer_obj.determine_domain}
+    good_domain_counts = results.count("good_domain")
+    bad_domain_counts = results.count("bad domain")
+    expect(good_domain_counts).to be >= bad_domain_counts
+
+  end
+
   it 'properly creates a message body' do
     message = UnitTestMailer.plain_message('test@example.org', 'Test!', {})
     body = Railgun.transform_for_mailgun(message)

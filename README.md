@@ -33,10 +33,10 @@ So, we change the `domain` key in the config block to accept a hash in addition 
     api_key: "mykey",
     domain: { # Sends 90% of all email through the original domain, 10% through the new domain
       "mydomain.com" => {
-        percent: 90
+        frequency: "0.9"
       },
       "myotherdomain.com" => {
-        percent: 10
+        frequency: "0.1"
       }
     }
   }
